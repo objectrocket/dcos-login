@@ -174,7 +174,12 @@ func (c *client) initiateAuth0(clusterID, clientID string) (string, error) {
 		return "", err
 	}
 
-	csrf, found := doc.Find(`input[name="authenticity_token"]`).Attr("value")
+	authFormDoc := doc.Find(".auth-form")
+	if authFormDoc.Size() == 0 {
+		return "", errors.New("Unable to find auth form")
+	}
+
+	csrf, found := authFormDoc.Find(`input[name="authenticity_token"]`).Attr("value")
 	if !found {
 		return "", errors.New("Unable to extract CSRF token from response")
 	}
